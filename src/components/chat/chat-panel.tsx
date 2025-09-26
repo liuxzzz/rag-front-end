@@ -1,12 +1,10 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageComponent } from './message';
 import { ChatInput } from './chat-input';
 import { ChatTab } from '@/types/chat';
-import { MoreHorizontal, Share } from 'lucide-react';
 
 interface ChatPanelProps {
   activeTab: ChatTab | null;
@@ -75,14 +73,6 @@ export function ChatPanel({ activeTab, onSendMessage }: ChatPanelProps) {
               {activeTab.messages.length} 条消息
             </span>
           )}
-        </div>
-        <div className="flex items-center gap-2">
-          {/* <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-800">
-            <Share className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-800">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button> */}
         </div>
       </div>
 

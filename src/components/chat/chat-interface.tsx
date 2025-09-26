@@ -4,7 +4,6 @@ import { useState, useCallback } from 'react';
 import { ChatTab, Message } from '@/types/chat';
 import { TabManager } from './tab-manager';
 import { ChatPanel } from './chat-panel';
-import { Separator } from '@/components/ui/separator';
 
 export function ChatInterface() {
   const [tabs, setTabs] = useState<ChatTab[]>([
@@ -163,7 +162,7 @@ export function ChatInterface() {
                       : tab
                   ));
                 }
-              } catch (e) {
+              } catch {
                 // 忽略解析错误
               }
             }

@@ -2,9 +2,6 @@
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import rehypeHighlight from 'rehype-highlight';
 
 interface MarkdownRendererProps {
   content: string;
@@ -12,22 +9,27 @@ interface MarkdownRendererProps {
 }
 
 export function MarkdownRenderer({ content, isStreaming }: MarkdownRendererProps) {
-
   return (
     <div className="prose prose-sm max-w-none text-gray-800">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[rehypeKatex, rehypeHighlight]}
+        remarkPlugins={[remarkGfm]}
         components={{
-          // 自定义代码块渲染
-          code({ node, className, children, ...props }: any) {
-            const inline = !className;
-            const match = /language-(\w+)/.exec(className || '');
-            const language = match ? match[1] : '';
+          // 简化的代码块渲染
+          code: ({ className, children }) => {
+            const isInline = !className;
+            const language = className?.replace('language-', '') || '';
             
-            if (!inline && language) {
+            if (isInline) {
               return (
-                <div className="relative group">
+                <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono">
+                  {children}
+                </code>
+              );
+            }
+            
+            return (
+              <div className="relative group my-4">
+                {language && (
                   <div className="flex items-center justify-between bg-gray-100 px-4 py-2 text-xs text-gray-600 border-b">
                     <span className="font-medium">{language}</span>
                     <button
@@ -37,98 +39,82 @@ export function MarkdownRenderer({ content, isStreaming }: MarkdownRendererProps
                       复制
                     </button>
                   </div>
-                  <pre className="!mt-0 !rounded-t-none">
-                    <code className={className} {...props}>
-                      {children}
-                    </code>
-                  </pre>
-                </div>
-              );
-            }
-            
-            return (
-              <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
-                {children}
-              </code>
-            );
-          },
-          
-          // 自定义表格渲染
-          table({ children }: any) {
-            return (
-              <div className="overflow-x-auto my-4">
-                <table className="min-w-full border-collapse border border-gray-300">
-                  {children}
-                </table>
+                )}
+                <pre className={`bg-gray-50 p-4 rounded ${language ? '!mt-0 !rounded-t-none' : ''} overflow-x-auto`}>
+                  <code className={`text-sm ${className || ''}`}>
+                    {children}
+                  </code>
+                </pre>
               </div>
             );
           },
           
-          th({ children }: any) {
-            return (
-              <th className="border border-gray-300 bg-gray-50 px-4 py-2 text-left font-semibold">
+          // 表格
+          table: ({ children }) => (
+            <div className="overflow-x-auto my-4">
+              <table className="min-w-full border-collapse border border-gray-300">
                 {children}
-              </th>
-            );
-          },
+              </table>
+            </div>
+          ),
           
-          td({ children }: any) {
-            return (
-              <td className="border border-gray-300 px-4 py-2">
-                {children}
-              </td>
-            );
-          },
+          th: ({ children }) => (
+            <th className="border border-gray-300 bg-gray-50 px-4 py-2 text-left font-semibold">
+              {children}
+            </th>
+          ),
           
-          // 自定义列表渲染
-          ul({ children }: any) {
-            return <ul className="list-disc list-inside space-y-1 my-2">{children}</ul>;
-          },
+          td: ({ children }) => (
+            <td className="border border-gray-300 px-4 py-2">
+              {children}
+            </td>
+          ),
           
-          ol({ children }: any) {
-            return <ol className="list-decimal list-inside space-y-1 my-2">{children}</ol>;
-          },
+          // 列表
+          ul: ({ children }) => (
+            <ul className="list-disc list-inside space-y-1 my-2">{children}</ul>
+          ),
           
-          // 自定义引用块渲染
-          blockquote({ children }: any) {
-            return (
-              <blockquote className="border-l-4 border-blue-500 bg-blue-50 pl-4 py-2 my-4 italic text-gray-700">
-                {children}
-              </blockquote>
-            );
-          },
+          ol: ({ children }) => (
+            <ol className="list-decimal list-inside space-y-1 my-2">{children}</ol>
+          ),
           
-          // 自定义标题渲染
-          h1({ children }: any) {
-            return <h1 className="text-xl font-bold mt-6 mb-3 text-gray-900">{children}</h1>;
-          },
+          // 引用块
+          blockquote: ({ children }) => (
+            <blockquote className="border-l-4 border-blue-500 bg-blue-50 pl-4 py-2 my-4 italic text-gray-700">
+              {children}
+            </blockquote>
+          ),
           
-          h2({ children }: any) {
-            return <h2 className="text-lg font-bold mt-5 mb-2 text-gray-900">{children}</h2>;
-          },
+          // 标题
+          h1: ({ children }) => (
+            <h1 className="text-xl font-bold mt-6 mb-3 text-gray-900">{children}</h1>
+          ),
           
-          h3({ children }: any) {
-            return <h3 className="text-base font-bold mt-4 mb-2 text-gray-900">{children}</h3>;
-          },
+          h2: ({ children }) => (
+            <h2 className="text-lg font-bold mt-5 mb-2 text-gray-900">{children}</h2>
+          ),
           
-          // 自定义段落渲染
-          p({ children }: any) {
-            return <p className="mb-3 leading-7">{children}</p>;
-          },
+          h3: ({ children }) => (
+            <h3 className="text-base font-bold mt-4 mb-2 text-gray-900">{children}</h3>
+          ),
           
-          // 自定义链接渲染
-          a({ href, children }: any) {
-            return (
-              <a 
-                href={href} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline"
-              >
-                {children}
-              </a>
-            );
-          },
+          // 段落
+          p: ({ children }) => (
+            <p className="mb-3 leading-7">{children}</p>
+          ),
+          
+          // 链接
+          a: ({ href, children }) => (
+            <a 
+              href={href} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 underline"
+            >
+              {children}
+            </a>
+          ),
         }}
       >
         {content}

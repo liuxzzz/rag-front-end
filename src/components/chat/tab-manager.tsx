@@ -3,8 +3,7 @@
 import { ChatTab } from '@/types/chat';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Plus, X, MessageCircle, Edit3, Menu } from 'lucide-react';
+import { Plus, X, MessageCircle, Edit3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TabManagerProps {
@@ -22,25 +21,6 @@ export function TabManager({
   onTabCreate, 
   onTabClose 
 }: TabManagerProps) {
-  const formatTime = (date: Date) => {
-    const now = new Date();
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
-    if (diffInHours < 24) {
-      return date.toLocaleTimeString('zh-CN', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      });
-    } else if (diffInHours < 24 * 7) {
-      const days = Math.floor(diffInHours / 24);
-      return `${days} 天前`;
-    } else {
-      return date.toLocaleDateString('zh-CN', { 
-        month: 'short', 
-        day: 'numeric' 
-      });
-    }
-  };
 
   const getTabTitle = (tab: ChatTab) => {
     if (tab.messages.length === 0) {
@@ -154,16 +134,6 @@ export function TabManager({
         </div>
       </ScrollArea>
 
-      {/* Footer */}
-      {/* <div className="p-3 border-t border-gray-700">
-        <Button 
-          variant="ghost" 
-          className="w-full justify-start gap-2 text-gray-300 hover:bg-gray-800 h-10"
-        >
-          <Menu className="h-4 w-4" />
-          设置
-        </Button>
-      </div> */}
     </div>
   );
 }
