@@ -69,17 +69,17 @@ export function MessageComponent({ message }: MessageProps) {
           </div>
           
           {/* Message Actions (只在hover时显示) */}
-          <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="mt-3  transition-opacity">
             <div className="flex items-center gap-3">
               <button 
                 onClick={handleCopy}
-                className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
               >
                 <Copy className="h-3 w-3" />
                 {copied ? '已复制' : '复制'}
               </button>
               
-              {!isUser && (
+              {/* {!isUser && (
                 <>
                   <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 transition-colors">
                     <RotateCcw className="h-3 w-3" />
@@ -95,7 +95,7 @@ export function MessageComponent({ message }: MessageProps) {
                     </button>
                   </div>
                 </>
-              )}
+              )} */}
             </div>
           </div>
         </div>

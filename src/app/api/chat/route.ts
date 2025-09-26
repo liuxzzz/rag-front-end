@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateEnv, getEnvForLogging, isProduction } from '@/lib/env-validation';
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,12 +9,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '无效的消息' }, { status: 400 });
     }
 
-    const apiKey = process.env.DASHSCOPE_API_KEY;
-    const appId = process.env.DASHSCOPE_APP_ID;
-
-    if (!apiKey || !appId) {
-      return NextResponse.json({ error: 'API 配置缺失' }, { status: 500 });
+    // 验证环境变量
+    let env;
+    try {
+      env = validateEnv();
+    } catch (error) {
+      console.error('环境变量验证失败:', error instanceof Error ? error.message : error);
+      if (!isProduction()) {
+        console.log('当前环境变量状态:', getEnvForLogging());
+      }
+      return NextResponse.json({ error: 'API 配置错误，请检查环境变量设置' }, { status: 500 });
     }
+
+    const { DASHSCOPE_API_KEY: apiKey, DASHSCOPE_APP_ID: appId } = env;
 
     const url = `https://dashscope.aliyuncs.com/api/v1/apps/${appId}/completion`;
 
